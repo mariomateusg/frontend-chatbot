@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendchat-deployment
+  labels:
+    app: frontendchat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontendchat
+  template:
+    metadata:
+      labels:
+        app: frontendchat
+    spec:
+      containers:
+      - name: frontendchat
+        image: mamateus/frontend-chatbot:1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: EACT_APP_SOCKET
+          value: "ws://backendchat-service:8087/ws"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontendchat-service
+spec:
+  type : NodePort
+  selector:
+    app: frontendchat
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30001
